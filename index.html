@@ -390,7 +390,7 @@ function Sidebar(){
   const condLabel = state.mode === 'instant' ? 'instant' : (state.duration+'s');
   const row = (k,v)=> h('div',{class:'flex justify-between'}, h('span',{class:'text-neutral-400'},k), h('span',{},String(v)));
   return h('aside',{class:'w-full lg:w-72 space-y-3 text-sm'},
-    h('h1',{class:'text-xl font-semibold'},'Eksperyment Fake Call'),
+    h('h1',{class:'text-xl font-semibold'},'Fake Call'),
     ModeToggle(),
     h('div',{class:'rounded-lg bg-neutral-900 border border-neutral-800 p-4 space-y-2'},
       row('ID uczestnika', state.participantId),
