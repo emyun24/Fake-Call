@@ -73,7 +73,7 @@ const STARS_BG = `background-image:
 pointer-events:none;`;
 
 const state = {
-  mode: 'opóźnienie',
+  mode: 'timer',
   screen: 'start',
   callerName: '',
   duration: 10,
@@ -239,7 +239,7 @@ function StartScreen(){
   return h('div',{class:'absolute inset-0 flex flex-col items-center justify-center px-8 text-center', style:'background:linear-gradient(180deg,#1a1a1a,#000)'},
     h('h2',{class:'text-white text-xl font-semibold mb-2'},'Fake Call'),
     h('p',{class:'text-neutral-400 text-sm mb-2'},'Naciśnij przycisk, aby rozpocząć test.'),
-    h('p',{class:'text-neutral-500 text-xs mb-8'}, 'Tryb: ' + (state.mode==='instant'?'Natychmiastowy':'Opóźnienie')),
+    h('p',{class:'text-neutral-500 text-xs mb-8'}, 'Tryb: ' + (state.mode==='instant'?'Natychmiastowy':'Timer')),
     h('button',{class:'px-8 py-3 rounded-full bg-white text-black font-semibold text-sm active:scale-95 transition', onclick:startExperiment},'Rozpocznij eksperyment')
   );
 }
@@ -263,7 +263,7 @@ function SetupScreen(){
   ];
   if (state.mode !== 'instant'){
     children.push(
-      h('label',{class:'text-neutral-400 text-xs mb-2'},'Opóźnienie'),
+      h('label',{class:'text-neutral-400 text-xs mb-2'},'Timer'),
       h('div',{class:'flex gap-2 mb-8'}, durBtn(10), durBtn(30))
     );
   } else {
@@ -381,7 +381,7 @@ function ModeToggle(){
   }, label);
   return h('div',{class:'rounded-lg bg-neutral-950 border border-neutral-800 p-4 space-y-2'},
     h('div',{class:'text-neutral-400 text-xs'},'Tryb prototypu'),
-    h('div',{class:'flex gap-2'}, btn('opóźnienie','Opóźnienie'), btn('instant','Natychmiastowy')),
+    h('div',{class:'flex gap-2'}, btn('timer','Timer'), btn('instant','Natychmiastowy')),
     h('div',{class:'text-[11px] text-neutral-500'}, 'Można zmienić tylko przed rozpoczęciem eksperymentu')
   );
 }
