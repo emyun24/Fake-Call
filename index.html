@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pl">
+<html lang="ko">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -107,7 +107,7 @@ function resetTrial(){
 }
 
 function resetAll(){
-  if (!confirm('Spowoduje to zresetowanie numeru uczestnika i całego stanu. Kontynuować?')) return;
+  if (!confirm('참가자 번호와 진행 상태를 모두 초기화합니다. 계속할까요?')) return;
   localStorage.removeItem(PID_KEY);
   state.participantId = 1;
   resetTrial();
@@ -200,9 +200,9 @@ function endCall(){
   };
 
   const headers = [
-    'ID_uczestnika','tryb','imie_dzwoniacego','liczba_klikniec','proby_fake_call','liczba_odrzucen',
-    'czas_konfiguracji_s','czas_do_pierwszego_klikniecia_s',
-    'czas_odpowiedzi_s','laczny_czas_fake_call_s','laczny_czas_sesji_s','znacznik_czasu'
+    '참가자ID','모드','발신자이름','클릭횟수','페이크콜시도횟수','거절횟수',
+    '설정소요시간_초','잠금화면_버튼클릭까지_초',
+    '수신화면_응답까지_초','페이크콜_총소요시간_초','세션_총소요시간_초','타임스탬프'
   ];
   const row = [
     state.participantId, state.mode, state.callerName||'',
@@ -227,10 +227,10 @@ function endCall(){
 }
 
 function fmtTime(d){
-  return d.toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'Europe/Warsaw'});
+  return d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'Asia/Seoul'});
 }
 function fmtDate(d){
-  return d.toLocaleDateString('pl-PL',{month:'long',day:'numeric',weekday:'long',timeZone:'Europe/Warsaw'});
+  return d.toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'long',timeZone:'Asia/Seoul'});
 }
 
 /* ── Screens ── */
@@ -238,41 +238,41 @@ function fmtDate(d){
 function StartScreen(){
   return h('div',{class:'absolute inset-0 flex flex-col items-center justify-center px-8 text-center', style:'background:linear-gradient(180deg,#1a1a1a,#000)'},
     h('h2',{class:'text-white text-xl font-semibold mb-2'},'Fake Call'),
-    h('p',{class:'text-neutral-400 text-sm mb-2'},'Naciśnij przycisk, aby rozpocząć test.'),
-    h('p',{class:'text-neutral-500 text-xs mb-8'}, 'Tryb: ' + (state.mode==='instant'?'Natychmiastowy':'Timer')),
-    h('button',{class:'px-8 py-3 rounded-full bg-white text-black font-semibold text-sm active:scale-95 transition', onclick:startExperiment},'Rozpocznij eksperyment')
+    h('p',{class:'text-neutral-400 text-sm mb-2'},'실험을 시작하려면 버튼을 누르세요.'),
+    h('p',{class:'text-neutral-500 text-xs mb-8'}, 'Mode: ' + (state.mode==='instant'?'Instant':'Timer')),
+    h('button',{class:'px-8 py-3 rounded-full bg-white text-black font-semibold text-sm active:scale-95 transition', onclick:startExperiment},'Start Experiment')
   );
 }
 
 function SetupScreen(){
   const input = h('input',{
     value: state.callerName,
-    placeholder: 'np. Mama',
+    placeholder: '예: 엄마',
     class: 'w-full bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-white text-sm mb-6 outline-none focus:border-neutral-600',
     oninput: (e)=>{ state.callerName = e.target.value; }
   });
   const durBtn = (d)=> h('button',{
     class:`flex-1 py-3 rounded-xl text-sm font-medium border ${state.duration===d?'bg-blue-600 text-white border-blue-600':'bg-neutral-900 text-neutral-300 border-neutral-800'}`,
     onclick:()=>{ state.duration=d; render(); }
-  }, d+' s');
+  }, d+'초');
 
   const children = [
-    h('h2',{class:'text-white text-2xl font-bold mb-6 text-center'},'Ustawienia'),
-    h('label',{class:'text-neutral-400 text-xs mb-2'},'Imię dzwoniącego'),
+    h('h2',{class:'text-white text-2xl font-bold mb-6 text-center'},'설정'),
+    h('label',{class:'text-neutral-400 text-xs mb-2'},'발신자 이름'),
     input,
   ];
-  if (state.mode !== 'instant'){
+  if (state.mode === 'timer'){
     children.push(
-      h('label',{class:'text-neutral-400 text-xs mb-2'},'Timer'),
+      h('label',{class:'text-neutral-400 text-xs mb-2'},'타이머'),
       h('div',{class:'flex gap-2 mb-8'}, durBtn(10), durBtn(30))
     );
   } else {
     children.push(
-      h('div',{class:'mb-8 text-xs text-neutral-500 leading-relaxed'},'Tryb natychmiastowy: naciśnięcie przycisku Fake Call spowoduje natychmiastowe połączenie.')
+      h('div',{class:'mb-8 text-xs text-neutral-500 leading-relaxed'},'즉시 실행 모드: Fake Call 버튼을 누르면 바로 전화가 옵니다.')
     );
   }
   children.push(
-    h('button',{class:'mt-auto mb-8 w-full py-3 rounded-xl bg-white text-black font-semibold text-sm active:scale-95', onclick:saveSetup},'Zapisz ustawienia')
+    h('button',{class:'mt-auto mb-8 w-full py-3 rounded-xl bg-white text-black font-semibold text-sm active:scale-95', onclick:saveSetup},'설정 저장')
   );
   return h('div',{class:'absolute inset-0 bg-neutral-950 pt-14 px-6 flex flex-col'}, ...children);
 }
@@ -321,11 +321,11 @@ function IncomingScreen(){
   );
   return h('div',{class:'absolute inset-0 flex flex-col items-center pt-20 px-6 fc-shake', style:'background:linear-gradient(180deg,#2a2a2a 0%,#000 100%)'},
     h('div',{class:'text-neutral-300 text-sm'},'iPhone'),
-    h('div',{class:'text-white text-4xl font-light mt-3'}, state.callerName || 'Dzwoniący'),
-    h('div',{class:'text-neutral-400 text-base mt-2'},'Telefon komórkowy'),
+    h('div',{class:'text-white text-4xl font-light mt-3'}, state.callerName || '발신자'),
+    h('div',{class:'text-neutral-400 text-base mt-2'},'휴대전화'),
     h('div',{class:'absolute bottom-12 left-0 right-0 grid grid-cols-2 px-12 place-items-center'},
-      col('Odrzuć','bg-red-600', reject, SVG.phoneOff('w-7 h-7'),'Odrzuć'),
-      col('Odbierz','bg-green-500', answer, SVG.phone('w-7 h-7'),'Odbierz')
+      col('거절','bg-red-600', reject, SVG.phoneOff('w-7 h-7'),'거절'),
+      col('응답','bg-green-500', answer, SVG.phone('w-7 h-7'),'응답')
     )
   );
 }
@@ -338,13 +338,13 @@ function CallScreen(){
     h('span',{class:'text-white text-[11px]'}, label)
   );
   return h('div',{class:'absolute inset-0 flex flex-col items-center pt-20 px-6', style:'background:linear-gradient(180deg,#1f1f1f 0%,#000 100%)'},
-    h('div',{class:'text-white text-3xl font-light'}, state.callerName || 'Dzwoniący'),
+    h('div',{class:'text-white text-3xl font-light'}, state.callerName || '발신자'),
     h('div',{class:'text-neutral-300 text-sm mt-2 tabular-nums'}, `${m}:${s}`),
     h('div',{class:'absolute bottom-32 left-0 right-0 px-8 grid grid-cols-3 gap-y-6'},
-      iconBtn('Wycisz', SVG.mic()), iconBtn('Klawiatura', SVG.keypad()), iconBtn('Głośnik', SVG.speaker()),
-      iconBtn('Dodaj', SVG.addUser()), iconBtn('Wstrzymaj', SVG.pauseCall()), iconBtn('FaceTime', SVG.facetime())
+      iconBtn('음소거', SVG.mic()), iconBtn('키패드', SVG.keypad()), iconBtn('스피커', SVG.speaker()),
+      iconBtn('추가', SVG.addUser()), iconBtn('대기', SVG.pauseCall()), iconBtn('FaceTime', SVG.facetime())
     ),
-    h('button',{class:'absolute bottom-10 left-1/2 -translate-x-1/2 w-16 h-16 rounded-full bg-red-600 flex items-center justify-center active:scale-95 shadow-lg', onclick:endCall, 'aria-label':'Zakończ połączenie', html: SVG.phoneOff('w-7 h-7')})
+    h('button',{class:'absolute bottom-10 left-1/2 -translate-x-1/2 w-16 h-16 rounded-full bg-red-600 flex items-center justify-center active:scale-95 shadow-lg', onclick:endCall, 'aria-label':'통화 종료', html: SVG.phoneOff('w-7 h-7')})
   );
 }
 
@@ -380,9 +380,9 @@ function ModeToggle(){
     disabled: locked
   }, label);
   return h('div',{class:'rounded-lg bg-neutral-950 border border-neutral-800 p-4 space-y-2'},
-    h('div',{class:'text-neutral-400 text-xs'},'Tryb prototypu'),
-    h('div',{class:'flex gap-2'}, btn('timer','Timer'), btn('instant','Natychmiastowy')),
-    h('div',{class:'text-[11px] text-neutral-500'}, 'Można zmienić tylko przed rozpoczęciem eksperymentu')
+    h('div',{class:'text-neutral-400 text-xs'},'프로토타입 모드'),
+    h('div',{class:'flex gap-2'}, btn('timer','Timer'), btn('instant','Instant')),
+    h('div',{class:'text-[11px] text-neutral-500'}, '실험 시작 전에만 변경 가능')
   );
 }
 
@@ -393,20 +393,20 @@ function Sidebar(){
     h('h1',{class:'text-xl font-semibold'},'Fake Call'),
     ModeToggle(),
     h('div',{class:'rounded-lg bg-neutral-900 border border-neutral-800 p-4 space-y-2'},
-      row('ID uczestnika', state.participantId),
-      row('Bieżący ekran', state.screen),
-      row('Warunek', condLabel),
-      row('Dzwoniący', state.callerName || '-'),
-      row('Liczba kliknięć', state.clickCount),
-      row('Próby Fake Call', state.fakeCallAttempts),
-      row('Liczba odrzuceń', state.rejectedCount)
+      row('참가자 ID', state.participantId),
+      row('현재 화면', state.screen),
+      row('조건', condLabel),
+      row('발신자', state.callerName || '-'),
+      row('클릭 수', state.clickCount),
+      row('Fake Call 시도', state.fakeCallAttempts),
+      row('거절 횟수', state.rejectedCount)
     ),
     h('button',{
       class:'w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-300 text-xs',
       onclick: resetAll,
-      html: SVG.refresh() + '<span class="ml-1">Zresetuj licznik uczestników</span>'
+      html: SVG.refresh() + '<span class="ml-1">참가자 카운트 초기화</span>'
     }),
-    h('p',{class:'text-xs text-neutral-500 leading-relaxed'},'Po zakończeniu połączenia plik CSV zostanie automatycznie pobrany.')
+    h('p',{class:'text-xs text-neutral-500 leading-relaxed'},'통화 종료 시 CSV가 자동으로 다운로드됩니다.')
   );
 }
 
